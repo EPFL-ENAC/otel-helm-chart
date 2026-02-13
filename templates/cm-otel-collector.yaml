@@ -11,9 +11,9 @@ data:
       otlp:
         protocols:
           grpc:
-            endpoint: 0.0.0.0:4317
+            endpoint: 0.0.0.0:{{ .Values.collector.receivers.grpc.port }}
           http:
-            endpoint: 0.0.0.0:4318
+            endpoint: 0.0.0.0:{{ .Values.collector.receivers.http.port }}
       {{- end }}
 
     processors:
@@ -31,7 +31,7 @@ data:
         {{- toYaml .Values.collector.config.exporters | nindent 6 }}
       {{- else }}
       prometheus:
-        endpoint: 0.0.0.0:{{ .Values.collector.containerPort }}
+        endpoint: 0.0.0.0:{{ .Values.collector.exporters.port }}
         resource_to_telemetry_conversion:
           enabled: true
       {{- end }}

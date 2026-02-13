@@ -9,13 +9,18 @@ collector:
     repository: otel/opentelemetry-collector-contrib
     tag: 0.95.0
 
-  containerPort: 9464
-
-  endpoints:
-    portName: metrics
+  exporters:
+    port: 9464
+    portName: metricsPort
     path: /metrics
     scheme: http
     interval: 30s
+
+  receivers:
+    grpc:
+      port: 4317
+    http:
+      port: 4318
 
   config:
     # If you provide receivers, processors, exporters or service configuration,
@@ -26,9 +31,9 @@ collector:
     #   otlp:
     #     protocols:
     #       grpc:
-    #         endpoint: 0.0.0.0:4317
-    #       http:
-    #         endpoint: 0.0.0.0:4318
+    #        endpoint: 0.0.0.0:{{ .Values.collector.receivers.grpc.port }}
+    #      http:
+    #        endpoint: 0.0.0.0:{{ .Values.collector.receivers.http.port }}
 
     processors:
     #   filter:
@@ -38,7 +43,7 @@ collector:
 
     exporters:
     #   prometheus:
-    #     endpoint: 0.0.0.0:1234
+    #     endpoint: 0.0.0.0:{{ .Values.collector.exporters.port }}
     #     resource_to_telemetry_conversion:
     #       enabled: true
 

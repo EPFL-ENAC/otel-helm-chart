@@ -11,8 +11,8 @@ spec:
       app: collector
       {{- include "otel.selectorLabels" . | nindent 6 }}
   endpoints:
-    - port: metrics
-      path: /metrics
-      scheme: http
-      interval: 30s
+    - port: {{ .Values.collector.exporters.portName }}
+      path: {{ .Values.collector.exporters.path }}
+      scheme: {{ .Values.collector.exporters.scheme }}
+      interval: {{ .Values.collector.exporters.interval }}
 {{- end }}

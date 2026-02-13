@@ -8,12 +8,12 @@ spec:
   selector:
     app: otel-collector
   ports:
-    - name: {{ .Values.collector.endpoints.portName }}
-      port: {{ .Values.collector.containerPort }}
-      targetPort: {{ .Values.collector.containerPort }}
+    - name: {{ .Values.collector.exporters.portName }}
+      port: {{ .Values.collector.exporters.port }}
+      targetPort: {{ .Values.collector.exporters.port }}
     - name: otlp-grpc
-      port: 4317
-      targetPort: 4317
+      port: {{ .Values.collector.receivers.grpc.port }}
+      targetPort: {{ .Values.collector.receivers.grpc.port }}
     - name: otlp-http
-      port: 4318
-      targetPort: 4318
+      port: {{ .Values.collector.receivers.http.port }}
+      targetPort: {{ .Values.collector.receivers.http.port }}
