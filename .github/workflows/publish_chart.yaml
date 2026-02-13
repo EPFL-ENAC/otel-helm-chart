@@ -17,13 +17,8 @@ jobs:
       packages: write
       id-token: write
     env:
-      CHART_NAME: "co2-calculator"
-      REGISTRY: "epfl-enac/co2-calculator"
-    defaults:
-      run:
-        working-directory: ./helm
-    # outputs:
-    #   chart_version: ${{ steps.chart_version.outputs.chart_version }}
+      CHART_NAME: "otel-collector"
+      REGISTRY: "epfl-enac/otel-helm-chart"
     steps:
       - uses: actions/checkout@v4
 
