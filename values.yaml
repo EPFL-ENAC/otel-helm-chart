@@ -1,0 +1,62 @@
+nameOverride: ""
+fullnameOverride: ""
+
+global:
+  imagePullSecrets: []
+
+collector:
+  image:
+    repository: otel/opentelemetry-collector-contrib
+    tag: 0.95.0
+
+  containerPort: 9464
+
+  endpoints:
+    portName: metrics
+    path: /metrics
+    scheme: http
+    interval: 30s
+
+  config:
+    # If you provide receivers, processors, exporters or service configuration,
+    # it will be used instead of the default one. You can use this to customize
+    # the collector configuration beyond what is supported by the default values.
+
+    receivers:
+    #   otlp:
+    #     protocols:
+    #       grpc:
+    #         endpoint: 0.0.0.0:4317
+    #       http:
+    #         endpoint: 0.0.0.0:4318
+
+    processors:
+    #   filter:
+    #     metrics:
+    #       datapoint:
+    #         - 'attributes["http.target"] == "/api/health"'
+
+    exporters:
+    #   prometheus:
+    #     endpoint: 0.0.0.0:1234
+    #     resource_to_telemetry_conversion:
+    #       enabled: true
+
+    service:
+    #   pipelines:
+    #     metrics:
+    #       receivers: [otlp]
+    #       processors: [filter]
+    #       exporters: [prometheus]
+
+  metrics:
+    # enabled: true
+    grafanaMonitor:
+      enabled: true
+
+  resources:
+    limits:
+      memory: "256Mi"
+    requests:
+      cpu: "10m"
+      memory: "256Mi"

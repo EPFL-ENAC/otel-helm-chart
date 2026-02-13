@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "otel.fullname" . }}-collector
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: collector
+      {{- include "otel.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        app: collector
+        {{- include "otel.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.global.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if .Values.collector.serviceAccount }}
+      serviceAccountName: {{ .Values.collector.serviceAccount }}
+      {{- end }}
+      containers:
+        - name: otel-collector
+          image: "{{ .Values.collector.image.repository }}:{{ .Values.collector.image.tag }}"
+          args:
+            - "--config=/conf/collector.yaml"
+          ports:
+            - containerPort: {{ .Values.collector.containerPort }}
+          volumeMounts:
+            - name: config
+              mountPath: /conf
+          resources:
+            {{- toYaml .Values.collector.resources | nindent 12 }}
+      volumes:
+        - name: config
+          configMap:
+            name: {{ include "otel.fullname" . }}-collector-config

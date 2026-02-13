@@ -1,0 +1,18 @@
+{{- if .Values.collector.metrics.grafanaMonitor.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ include "otel.fullname" . }}-metrics-monitor
+  labels:
+    k8s-app: {{ include "otel.fullname" . }}-collector
+spec:
+  selector:
+    matchLabels:
+      app: collector
+      {{- include "otel.selectorLabels" . | nindent 6 }}
+  endpoints:
+    - port: metrics
+      path: /metrics
+      scheme: http
+      interval: 30s
+{{- end }}
