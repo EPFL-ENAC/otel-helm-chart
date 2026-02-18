@@ -47,6 +47,12 @@ data:
         {{- toYaml .Values.collector.config.service | nindent 6 }}
       {{- else }}
       pipelines:
+        {{- if .Values.jaeger.enabled }}
+        traces:
+          receivers: [otlp]
+          processors: [filter]
+          exporters: [otlp/jaeger]
+        {{- end }}
         metrics:
           receivers: [otlp]
           processors: [filter]
