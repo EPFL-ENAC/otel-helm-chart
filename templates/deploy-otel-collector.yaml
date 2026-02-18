@@ -13,6 +13,8 @@ spec:
       labels:
         app: otel-collector
         {{- include "otel.selectorLabels" . | nindent 8 }}
+      annotations:
+        configmap-hash: {{ include (print $.Template.BasePath "/cm-otel-collector.yaml") . | sha256sum }}
     spec:
       {{- with .Values.global.imagePullSecrets }}
       imagePullSecrets:
