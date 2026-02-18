@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "otel.fullname" . }}-jaeger
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: jaeger
+      {{- include "otel.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        app: jaeger
+        {{- include "otel.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.global.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if .Values.collector.serviceAccount }}
+      serviceAccountName: {{ .Values.collector.serviceAccount }}
+      {{- end }}
+      containers:
+        - name: jaeger
+          image: "{{ .Values.jaeger.image.repository }}:{{ .Values.jaeger.image.tag }}"
+          ports:
+            - containerPort: {{ .Values.jaeger.endpoints.http.port }}
+            - containerPort: {{ .Values.jaeger.endpoints.grpc.port }}
+          resources:
+            {{- toYaml .Values.jaeger.resources | nindent 12 }}
+            limits:
+              memory: "256Mi"
+            requests:
+              cpu: "10m"
+              memory: "256Mi"

@@ -6,12 +6,12 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-      app: collector
+      app: otel-collector
       {{- include "otel.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       labels:
-        app: collector
+        app: otel-collector
         {{- include "otel.selectorLabels" . | nindent 8 }}
     spec:
       {{- with .Values.global.imagePullSecrets }}
@@ -27,7 +27,8 @@ spec:
           args:
             - "--config=/conf/collector.yaml"
           ports:
-            - containerPort: {{ .Values.collector.containerPort }}
+            - containerPort: {{ .Values.collector.receivers.grpc.port }}
+            - containerPort: {{ .Values.collector.exporters.port }}
           volumeMounts:
             - name: config
               mountPath: /conf

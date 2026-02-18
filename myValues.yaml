@@ -1,5 +1,0 @@
-fullnameOverride: biloute
-collector:
-  config:
-    receivers:
-    processors:

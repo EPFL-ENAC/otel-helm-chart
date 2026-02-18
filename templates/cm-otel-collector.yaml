@@ -34,6 +34,12 @@ data:
         endpoint: 0.0.0.0:{{ .Values.collector.exporters.port }}
         resource_to_telemetry_conversion:
           enabled: true
+      {{- if .Values.jaeger.enabled }}
+      otlp/jaeger:
+        endpoint: {{ include "otel.fullname" . }}-jaeger:{{ .Values.jaeger.endpoints.grpc.port }}
+        tls:
+          insecure: true
+      {{- end }}
       {{- end }}
 
     service:
