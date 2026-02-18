@@ -8,7 +8,7 @@ metadata:
 spec:
   selector:
     matchLabels:
-      app: otel-collector
+      app: {{ include "otel.fullname" . }}-collector
       {{- include "otel.selectorLabels" . | nindent 6 }}
   endpoints:
     - port: {{ .Values.collector.exporters.portName }}
