@@ -29,8 +29,3 @@ spec:
             - containerPort: {{ .Values.jaeger.endpoints.grpc.port }}
           resources:
             {{- toYaml .Values.jaeger.resources | nindent 12 }}
-            limits:
-              memory: "256Mi"
-            requests:
-              cpu: "10m"
-              memory: "256Mi"
