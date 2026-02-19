@@ -9,6 +9,8 @@ collector:
     repository: otel/opentelemetry-collector-contrib
     tag: 0.95.0
 
+  serviceAccount:
+  
   exporters:
     port: 9464
     portName: metrics

@@ -2,14 +2,14 @@
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
-  name: {{ include "otel.fullname" . }}-metrics-monitor
+  name: '{{ include "otel.fullname" . }}-metrics-monitor'
   labels:
-    k8s-app: {{ include "otel.fullname" . }}-collector
+    k8s-app: '{{ include "otel.fullname" . }}-collector'
     {{- include "otel.labels" . | nindent 4 }}
 spec:
   selector:
     matchLabels:
-      {{- include "otel.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/name: {{ include "otel.name" . }}
       app.kubernetes.io/component: collector
   endpoints:
     - port: {{ .Values.collector.exporters.portName }}

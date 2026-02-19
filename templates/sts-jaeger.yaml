@@ -1,7 +1,7 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
-  name: {{ include "otel.fullname" . }}-jaeger
+  name: '{{ include "otel.fullname" . }}-jaeger'
   labels:
     {{- include "otel.labels" . | nindent 4 }}
     app.kubernetes.io/component: jaeger
@@ -17,6 +17,7 @@ spec:
         {{- include "otel.selectorLabels" . | nindent 8 }}
         app.kubernetes.io/component: jaeger
     spec:
+      serviceName: '{{ include "otel.fullname" . }}-jaeger'
       {{- with .Values.global.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
@@ -27,8 +28,27 @@ spec:
       containers:
         - name: jaeger
           image: "{{ .Values.jaeger.image.repository }}:{{ .Values.jaeger.image.tag }}"
+          args:
+            - "--span-storage.type=badger"
+            - "--badger.directory-key=/badger/key"
+            - "--badger.directory-value=/badger/value"
+            - "--badger.ephemeral=false"
+            - "--badger.span-store-ttl=168h"
+            - "--badger.maintenance-interval=1h"
           ports:
             - containerPort: {{ .Values.jaeger.endpoints.http.port }}
             - containerPort: {{ .Values.jaeger.endpoints.grpc.port }}
           resources:
             {{- toYaml .Values.jaeger.resources | nindent 12 }}
+          volumeMounts:
+            - name: jaeger-storage
+              mountPath: /badger
+  volumeClaimTemplates:
+    - metadata:
+        name: jaeger-storage
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 1Gi
