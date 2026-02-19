@@ -30,8 +30,7 @@ spec:
           image: "{{ .Values.jaeger.image.repository }}:{{ .Values.jaeger.image.tag }}"
           args:
             - "--span-storage.type=badger"
-            - "--badger.directory-key=/badger/key"
-            - "--badger.directory-value=/badger/value"
+            - "--badger.directory=/badger"
             - "--badger.ephemeral=false"
             - "--badger.span-store-ttl=168h"
             - "--badger.maintenance-interval=1h"
