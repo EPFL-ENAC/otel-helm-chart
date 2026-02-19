@@ -1,5 +1,5 @@
 apiVersion: apps/v1
-kind: StatefulSet
+kind: Deployment
 metadata:
   name: '{{ include "otel.fullname" . }}-jaeger'
   labels:
@@ -17,7 +17,6 @@ spec:
         {{- include "otel.selectorLabels" . | nindent 8 }}
         app.kubernetes.io/component: jaeger
     spec:
-      serviceName: '{{ include "otel.fullname" . }}-jaeger'
       {{- with .Values.global.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
