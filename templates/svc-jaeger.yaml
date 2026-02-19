@@ -3,12 +3,12 @@ kind: Service
 metadata:
   name: {{ include "otel.fullname" . }}-jaeger
   labels:
-    app: jaeger
     {{- include "otel.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: jaeger
 spec:
   selector:
-    app: jaeger
     {{- include "otel.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: jaeger
   ports:
     - name: http
       port: {{ .Values.jaeger.endpoints.http.port }}

@@ -2,17 +2,20 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ include "otel.fullname" . }}-jaeger
+  labels:
+    {{- include "otel.labels" . | nindent 4 }}
+    app.kubernetes.io/component: jaeger
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: jaeger
       {{- include "otel.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: jaeger
   template:
     metadata:
       labels:
-        app: jaeger
         {{- include "otel.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: jaeger
     spec:
       {{- with .Values.global.imagePullSecrets }}
       imagePullSecrets:

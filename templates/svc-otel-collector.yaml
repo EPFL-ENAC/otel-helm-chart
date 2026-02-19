@@ -3,12 +3,12 @@ kind: Service
 metadata:
   name: {{ include "otel.fullname" . }}-collector
   labels:
-    app: otel-collector
     {{- include "otel.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: collector
 spec:
   selector:
-    app: otel-collector
     {{- include "otel.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: collector
   ports:
     - name: {{ .Values.collector.exporters.portName }}
       port: {{ .Values.collector.exporters.port }}
