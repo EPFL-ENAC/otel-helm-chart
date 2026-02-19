@@ -2,17 +2,22 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ include "otel.fullname" . }}-collector
+  labels:
+    {{- include "otel.labels" . | nindent 4 }}
+    app.kubernetes.io/component: collector
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: collector
       {{- include "otel.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: collector
   template:
     metadata:
       labels:
-        app: collector
         {{- include "otel.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: collector
+      annotations:
+        configmap-hash: {{ include (print $.Template.BasePath "/cm-otel-collector.yaml") . | sha256sum }}
     spec:
       {{- with .Values.global.imagePullSecrets }}
       imagePullSecrets:
@@ -27,7 +32,8 @@ spec:
           args:
             - "--config=/conf/collector.yaml"
           ports:
-            - containerPort: {{ .Values.collector.containerPort }}
+            - containerPort: {{ .Values.collector.receivers.grpc.port }}
+            - containerPort: {{ .Values.collector.exporters.port }}
           volumeMounts:
             - name: config
               mountPath: /conf

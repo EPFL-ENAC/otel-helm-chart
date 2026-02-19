@@ -11,7 +11,7 @@ collector:
 
   exporters:
     port: 9464
-    portName: metricsPort
+    portName: metrics
     path: /metrics
     scheme: http
     interval: 30s
@@ -58,6 +58,25 @@ collector:
     # enabled: true
     grafanaMonitor:
       enabled: true
+
+  resources:
+    limits:
+      memory: "256Mi"
+    requests:
+      cpu: "10m"
+      memory: "256Mi"
+
+jaeger:
+  enabled: true
+  image:
+    repository: jaegertracing/all-in-one
+    tag: "1.49"
+
+  endpoints:
+    grpc:
+      port: 4317
+    http:
+      port: 16686
 
   resources:
     limits:

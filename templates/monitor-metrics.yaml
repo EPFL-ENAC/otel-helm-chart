@@ -5,11 +5,12 @@ metadata:
   name: {{ include "otel.fullname" . }}-metrics-monitor
   labels:
     k8s-app: {{ include "otel.fullname" . }}-collector
+    {{- include "otel.labels" . | nindent 4 }}
 spec:
   selector:
     matchLabels:
-      app: collector
       {{- include "otel.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: collector
   endpoints:
     - port: {{ .Values.collector.exporters.portName }}
       path: {{ .Values.collector.exporters.path }}
