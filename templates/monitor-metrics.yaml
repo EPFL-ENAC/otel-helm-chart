@@ -5,7 +5,7 @@ metadata:
   name: {{ include "otel.fullname" . }}-metrics-monitor
   labels:
     k8s-app: {{ include "otel.fullname" . }}-collector
-    {{- include "otel.selectorLabels" . | nindent 4 }}
+    {{- include "otel.labels" . | nindent 4 }}
 spec:
   selector:
     matchLabels:

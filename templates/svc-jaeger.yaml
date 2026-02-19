@@ -3,7 +3,7 @@ kind: Service
 metadata:
   name: {{ include "otel.fullname" . }}-jaeger
   labels:
-    {{- include "otel.selectorLabels" . | nindent 4 }}
+    {{- include "otel.labels" . | nindent 4 }}
     app.kubernetes.io/component: jaeger
 spec:
   selector:
