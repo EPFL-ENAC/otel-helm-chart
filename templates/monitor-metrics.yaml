@@ -9,8 +9,8 @@ metadata:
 spec:
   selector:
     matchLabels:
-      app: otel-collector
       {{- include "otel.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: collector
   endpoints:
     - port: {{ .Values.collector.exporters.portName }}
       path: {{ .Values.collector.exporters.path }}
