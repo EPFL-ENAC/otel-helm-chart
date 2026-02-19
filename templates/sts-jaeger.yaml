@@ -28,26 +28,8 @@ spec:
       containers:
         - name: jaeger
           image: "{{ .Values.jaeger.image.repository }}:{{ .Values.jaeger.image.tag }}"
-          args:
-            - "--span-storage.type=badger"
-            - "--badger.directory=/badger"
-            - "--badger.ephemeral=false"
-            - "--badger.span-store-ttl=168h"
-            - "--badger.maintenance-interval=1h"
           ports:
             - containerPort: {{ .Values.jaeger.endpoints.http.port }}
             - containerPort: {{ .Values.jaeger.endpoints.grpc.port }}
           resources:
             {{- toYaml .Values.jaeger.resources | nindent 12 }}
-          volumeMounts:
-            - name: jaeger-storage
-              mountPath: /badger
-  volumeClaimTemplates:
-    - metadata:
-        name: jaeger-storage
-      spec:
-        accessModes:
-          - ReadWriteOnce
-        resources:
-          requests:
-            storage: 1Gi
