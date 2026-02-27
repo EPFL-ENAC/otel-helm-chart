@@ -27,6 +27,14 @@ data:
         metrics:
           datapoint:
             - 'attributes["http.target"] == "/api/health"'
+      tail_sampling:
+        policies:
+          - name: drop-health
+            type: string_attribute
+            string_attribute:
+              key: http.target
+              values: ["/health"]
+              invert_match: true
       {{- end }}
 
     exporters:
@@ -53,7 +61,7 @@ data:
         {{- if .Values.jaeger.enabled }}
         traces:
           receivers: [otlp]
-          processors: [filter]
+          processors: [filter, tail_sampling]
           exporters: [otlp/jaeger]
         {{- end }}
         metrics:

@@ -28,6 +28,9 @@ spec:
       containers:
         - name: jaeger
           image: "{{ .Values.jaeger.image.repository }}:{{ .Values.jaeger.image.tag }}"
+          env:
+            - name: MEMORY_MAX_TRACES
+              value: "{{ .Values.jaeger.memoryMaxTraces }}"
           ports:
             - containerPort: {{ .Values.jaeger.endpoints.http.port }}
             - containerPort: {{ .Values.jaeger.endpoints.grpc.port }}
