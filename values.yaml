@@ -3,6 +3,7 @@ fullnameOverride: ""
 
 global:
   imagePullSecrets: []
+  revisionHistoryLimit: 2
 
 collector:
   image:

@@ -6,6 +6,7 @@ metadata:
     {{- include "otel.labels" . | nindent 4 }}
     app.kubernetes.io/component: collector
 spec:
+  revisionHistoryLimit: {{ .Values.global.revisionHistoryLimit }}
   replicas: 1
   selector:
     matchLabels:
