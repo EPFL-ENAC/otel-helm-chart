@@ -77,7 +77,7 @@ jaeger:
   
   # jaeger.memoryMaxTraces
   # Maximum number of traces that can be stored in memory. Once the limit is reached, new traces will be dropped until some of the existing traces are flushed to the storage backend. Setting this value to 0 means no limit.
-  memoryMaxTraces: 100000
+  memoryMaxTraces: 10000
 
   endpoints:
     grpc:
