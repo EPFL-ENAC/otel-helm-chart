@@ -2,11 +2,11 @@ name: Package and Publish Helm Chart
 
 on:
   push:
-    # branches:
-    #   - dev
-    #   - stage
-    #   - "ci-test/**"
-    tags: ["*"] # x.x.x, x.x.x-rc, x.x.x-dev, must match Chart.yaml version
+    branches:
+      - dev
+      - stage
+      - "ci-test/**"
+    tags: ["v*.*.*"] # vx.x.x
 
 jobs:
   build-image:
@@ -22,16 +22,39 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Check chart version matches tag
+      - name: Get Chart.yaml version and tag version
         shell: bash
         run: |
-          TAG="${GITHUB_REF_NAME}"
-          CHART_VERSION=$(yq -r '.version' Chart.yaml)
+          CHART_VER=$(yq -r '.version' Chart.yaml)
+          echo "CHART_VER=$CHART_VER" >> $GITHUB_ENV
+          TAG_VER=$(echo "${GITHUB_REF_NAME}" | sed 's/^v//')
+          echo "TAG_VER=$TAG_VER" >> $GITHUB_ENV
 
-          if [[ "$TAG" != "$CHART_VERSION" ]]; then
-            echo "Tag ($TAG) does not match Chart.yaml version ($CHART_VERSION)"
-            exit 1
+      - name: Set Helm chart version based on branch
+        run: |
+          if [[ "${{github.ref}}" == refs/tags/* ]]; then
+            if [[ ! "$TAG_VER" != ${CHART_VER} ]]; then
+              echo "Tag '${GITHUB_REF_NAME}' ($TAG_VER) does not match chart version '$CHART_VER'"
+              exit 1
+            fi
+            CHART_VER=${{ github.ref_name }}
           fi
+          if [[ "${{github.ref}}" == refs/heads/stage ]]; then
+            CHART_VER="$CHART_VER$-rc.{{ github.run_number }}"
+          fi
+          if [[ "${{github.ref}}" == refs/heads/dev ]]; then
+            CHART_VER="$CHART_VER$-dev.{{ github.run_number }}"
+          fi
+          if [[ "${{github.ref}}" == refs/heads/ci-test/* ]]; then
+            CHART_VER="$CHART_VER$-dev.{{ github.run_number }}"
+          fi
+          echo "CHART_NAME=$CHART_VER" >> $GITHUB_ENV
+
+      - name: Render Chart
+        run: helm template .
+
+      - name: Package Chart
+        run: helm package --version $CHART_VER .
 
       - name: Log into registry
         if: github.event_name != 'pull_request'
@@ -40,27 +63,6 @@ jobs:
           registry: ghcr.io/${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Render Chart
-        run: helm template .
-
-      - name: Set Helm chart version based on branch
-        run: |
-          if [[ "${{github.ref}}" == refs/tags/* ]]; then
-            echo "CHART_VER=${{ github.ref_name }}" >> $GITHUB_ENV
-          fi
-          if [[ "${{github.ref}}" == refs/heads/stage ]]; then
-            echo "CHART_VER=1.0.${{ github.run_number }}-rc" >> $GITHUB_ENV
-          fi
-          if [[ "${{github.ref}}" == refs/heads/dev ]]; then
-            echo "CHART_VER=1.0.${{ github.run_number }}-dev" >> $GITHUB_ENV
-          fi
-          if [[ "${{github.ref}}" == refs/heads/ci-test/* ]]; then
-            echo "CHART_VER=1.0.${{ github.run_number }}-dev" >> $GITHUB_ENV
-          fi
-
-      - name: Package Chart
-        run: helm package --version $CHART_VER .
 
       - name: Push Chart
         if: github.event_name != 'pull_request'
