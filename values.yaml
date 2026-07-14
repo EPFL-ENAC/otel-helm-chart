@@ -8,7 +8,7 @@ global:
 collector:
   image:
     repository: otel/opentelemetry-collector-contrib
-    tag: 0.95.0
+    tag: 0.145.0
 
   serviceAccount:
   
@@ -31,34 +31,55 @@ collector:
     # the collector configuration beyond what is supported by the default values.
 
     receivers:
-    #   otlp:
-    #     protocols:
-    #       grpc:
-    #        endpoint: 0.0.0.0:{{ .Values.collector.receivers.grpc.port }}
-    #      http:
-    #        endpoint: 0.0.0.0:{{ .Values.collector.receivers.http.port }}
+      # otlp:
+      #   protocols:
+      #     grpc:
+      #      endpoint: 0.0.0.0:{{ .Values.collector.receivers.grpc.port }}
+      #    http:
+      #      endpoint: 0.0.0.0:{{ .Values.collector.receivers.http.port }}
 
     processors:
-    #   filter:
-    #     metrics:
-    #       datapoint:
-    #         - 'attributes["http.target"] == "/api/health"'
+      # filter:
+      #   error_mode: ignore
+      #   metrics:
+      #     datapoint:
+      #       - 'attributes["http.route"] == "/health"'
+      #       - 'attributes["http.route"] == "/healthz"'
+      #       - 'attributes["http.route"] == "/ready"'
+      # tail_sampling:
+      #   policies:
+      #     - name: drop-health
+      #       type: string_attribute
+      #       string_attribute:
+      #         key: http.target
+      #         values:
+      #           - /health
+      #           - /healthz
+      #           - /ready
+      #         invert_match: true
 
     exporters:
-    #   prometheus:
-    #     endpoint: 0.0.0.0:{{ .Values.collector.exporters.port }}
-    #     resource_to_telemetry_conversion:
-    #       enabled: true
+      # prometheus:
+      #   endpoint: 0.0.0.0:{{ .Values.collector.exporters.port }}
+      #   resource_to_telemetry_conversion:
+      #     enabled: true
+      # otlp/jaeger:
+      #   endpoint: {{ include "otel.fullname" . }}-jaeger:{{ .Values.jaeger.endpoints.grpc.port }}
+      #   tls:
+      #     insecure: true
 
     service:
-    #   pipelines:
-    #     metrics:
-    #       receivers: [otlp]
-    #       processors: [filter]
-    #       exporters: [prometheus]
+      # pipelines:
+      #   traces:
+      #     receivers: [otlp]
+      #     processors: [filter, tail_sampling]
+      #     exporters: [otlp/jaeger]
+      #   metrics:
+      #     receivers: [otlp]
+      #     processors: [filter]
+      #     exporters: [prometheus]
 
   metrics:
-    # enabled: true
     grafanaMonitor:
       enabled: true
 
