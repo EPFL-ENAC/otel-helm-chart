@@ -48,7 +48,7 @@ jobs:
           if [[ "${{github.ref}}" == refs/heads/ci-test/* ]]; then
             CHART_VER="$CHART_VER$-dev.{{ github.run_number }}"
           fi
-          echo "CHART_NAME=$CHART_VER" >> $GITHUB_ENV
+          echo "CHART_VER=$CHART_VER" >> $GITHUB_ENV
 
       - name: Render Chart
         run: helm template .
