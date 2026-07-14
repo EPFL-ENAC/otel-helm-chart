@@ -40,15 +40,16 @@ jobs:
             CHART_VER=${{ github.ref_name }}
           fi
           if [[ "${{github.ref}}" == refs/heads/stage ]]; then
-            CHART_VER="$CHART_VER$-rc.{{ github.run_number }}"
+            CHART_VER="${CHART_VER}-rc.{{ github.run_number }}"
           fi
           if [[ "${{github.ref}}" == refs/heads/dev ]]; then
-            CHART_VER="$CHART_VER$-dev.{{ github.run_number }}"
+            CHART_VER="${CHART_VER}-dev.{{ github.run_number }}"
           fi
           if [[ "${{github.ref}}" == refs/heads/ci-test/* ]]; then
-            CHART_VER="$CHART_VER$-dev.{{ github.run_number }}"
+            CHART_VER="${CHART_VER}-dev.{{ github.run_number }}"
           fi
-          echo "CHART_VER=$CHART_VER" >> $GITHUB_ENV
+          echo "CHART_VER=${CHART_VER}" >> $GITHUB_ENV
+          echo "CHART_VER=${CHART_VER}"
 
       - name: Render Chart
         run: helm template .
