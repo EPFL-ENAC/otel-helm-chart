@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ include "otel.fullname" . }}-collector-config
+  name: '{{ include "otel.fullname" . }}-collector-config'
   labels:
     {{- include "otel.labels" . | nindent 4 }}
     app.kubernetes.io/component: collector
@@ -24,9 +24,23 @@ data:
         {{- toYaml .Values.collector.config.processors | nindent 6 }}
       {{- else }}
       filter:
+        error_mode: ignore
         metrics:
           datapoint:
-            - 'attributes["http.target"] == "/api/health"'
+            - 'attributes["http.route"] == "/health"'
+            - 'attributes["http.route"] == "/healthz"'
+            - 'attributes["http.route"] == "/ready"'
+      tail_sampling:
+        policies:
+          - name: drop-health
+            type: string_attribute
+            string_attribute:
+              key: http.target
+              values:
+                - /health
+                - /healthz
+                - /ready
+              invert_match: true
       {{- end }}
 
     exporters:
@@ -53,7 +67,7 @@ data:
         {{- if .Values.jaeger.enabled }}
         traces:
           receivers: [otlp]
-          processors: [filter]
+          processors: [filter, tail_sampling]
           exporters: [otlp/jaeger]
         {{- end }}
         metrics:

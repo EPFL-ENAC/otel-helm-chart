@@ -3,12 +3,15 @@ fullnameOverride: ""
 
 global:
   imagePullSecrets: []
+  revisionHistoryLimit: 2
 
 collector:
   image:
     repository: otel/opentelemetry-collector-contrib
     tag: 0.95.0
 
+  serviceAccount:
+  
   exporters:
     port: 9464
     portName: metrics
@@ -71,6 +74,10 @@ jaeger:
   image:
     repository: jaegertracing/all-in-one
     tag: "1.49"
+  
+  # jaeger.memoryMaxTraces
+  # Maximum number of traces that can be stored in memory. Once the limit is reached, new traces will be dropped until some of the existing traces are flushed to the storage backend. Setting this value to 0 means no limit.
+  memoryMaxTraces: 10000
 
   endpoints:
     grpc:
@@ -80,7 +87,7 @@ jaeger:
 
   resources:
     limits:
-      memory: "256Mi"
+      memory: "512Mi"
     requests:
       cpu: "10m"
-      memory: "256Mi"
+      memory: "512Mi"

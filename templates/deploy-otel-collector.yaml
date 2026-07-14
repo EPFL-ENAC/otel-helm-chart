@@ -1,11 +1,12 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "otel.fullname" . }}-collector
+  name: '{{ include "otel.fullname" . }}-collector'
   labels:
     {{- include "otel.labels" . | nindent 4 }}
     app.kubernetes.io/component: collector
 spec:
+  revisionHistoryLimit: {{ .Values.global.revisionHistoryLimit }}
   replicas: 1
   selector:
     matchLabels:
@@ -31,6 +32,10 @@ spec:
           image: "{{ .Values.collector.image.repository }}:{{ .Values.collector.image.tag }}"
           args:
             - "--config=/conf/collector.yaml"
+          {{- with .Values.collector.extraEnv }}
+          env:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           ports:
             - containerPort: {{ .Values.collector.receivers.grpc.port }}
             - containerPort: {{ .Values.collector.exporters.port }}
