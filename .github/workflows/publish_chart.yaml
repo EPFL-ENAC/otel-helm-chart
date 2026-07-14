@@ -36,7 +36,7 @@ jobs:
       - name: Set Helm chart version based on branch
         run: |
           if [[ "${{github.ref}}" == refs/tags/* ]]; then
-            echo "CHART_VER=${{ github.event.release.tag_name }}" >> $GITHUB_ENV
+            echo "CHART_VER=${{ github.ref_name }}" >> $GITHUB_ENV
           fi
           if [[ "${{github.ref}}" == refs/heads/stage ]]; then
             echo "CHART_VER=1.0.${{ github.run_number }}-rc" >> $GITHUB_ENV
