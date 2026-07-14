@@ -24,23 +24,22 @@ data:
         {{- toYaml .Values.collector.config.processors | nindent 6 }}
       {{- else }}
       filter:
+        error_mode: ignore
         metrics:
           datapoint:
-            - 'attributes["http.target"] == "/api/health"'
-            - 'attributes["http.target"] == "/api/healthz"'
+            - 'attributes["http.route"] == "/health"'
+            - 'attributes["http.route"] == "/healthz"'
+            - 'attributes["http.route"] == "/ready"'
       tail_sampling:
         policies:
           - name: drop-health
             type: string_attribute
             string_attribute:
               key: http.target
-              values: ["/health"]
-              invert_match: true
-          - name: drop-healthz
-            type: string_attribute
-            string_attribute:
-              key: http.target
-              values: ["/healthz"]
+              values:
+                - /health
+                - /healthz
+                - /ready
               invert_match: true
       {{- end }}
 
