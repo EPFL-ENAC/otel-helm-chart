@@ -2,11 +2,11 @@ name: Package and Publish Helm Chart
 
 on:
   push:
-    branches:
-      - dev
-      - stage
-      - "ci-test/**"
-    tags: ["v*.*.*"]
+    # branches:
+    #   - dev
+    #   - stage
+    #   - "ci-test/**"
+    tags: ["*"] # x.x.x, x.x.x-rc, x.x.x-dev, must match Chart.yaml version
 
 jobs:
   build-image:
@@ -21,6 +21,17 @@ jobs:
       REGISTRY: "epfl-enac/otel-helm-chart"
     steps:
       - uses: actions/checkout@v4
+
+      - name: Check chart version matches tag
+        shell: bash
+        run: |
+          TAG="${GITHUB_REF_NAME}"
+          CHART_VERSION=$(yq -r '.version' Chart.yaml)
+
+          if [[ "$TAG" != "$CHART_VERSION" ]]; then
+            echo "Tag ($TAG) does not match Chart.yaml version ($CHART_VERSION)"
+            exit 1
+          fi
 
       - name: Log into registry
         if: github.event_name != 'pull_request'
