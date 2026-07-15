@@ -33,7 +33,7 @@ jobs:
       - name: Set Helm chart version based on branch
         run: |
           if [[ "${{github.ref}}" == refs/tags/* ]]; then
-            if [[ ! "$TAG_VER" != ${CHART_VER} ]]; then
+            if [[ ! "$TAG_VER" == ${CHART_VER} ]]; then
               echo "Tag '${GITHUB_REF_NAME}' ($TAG_VER) does not match chart version '$CHART_VER'"
               exit 1
             fi
