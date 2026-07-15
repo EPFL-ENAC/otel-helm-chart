@@ -37,7 +37,6 @@ jobs:
               echo "Tag '${GITHUB_REF_NAME}' ($TAG_VER) does not match chart version '$CHART_VER'"
               exit 1
             fi
-            CHART_VER=${{ github.ref_name }}
           fi
           if [[ "${{github.ref}}" == refs/heads/stage ]]; then
             CHART_VER="${CHART_VER}-rc.${{ github.run_number }}"
