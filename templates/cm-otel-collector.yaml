@@ -22,25 +22,6 @@ data:
     processors:
       {{- if .Values.collector.config.processors }}
         {{- toYaml .Values.collector.config.processors | nindent 6 }}
-      {{- else }}
-      filter:
-        error_mode: ignore
-        metrics:
-          datapoint:
-            - 'attributes["http.route"] == "/health"'
-            - 'attributes["http.route"] == "/healthz"'
-            - 'attributes["http.route"] == "/ready"'
-      tail_sampling:
-        policies:
-          - name: drop-health
-            type: string_attribute
-            string_attribute:
-              key: http.target
-              values:
-                - /health
-                - /healthz
-                - /ready
-              invert_match: true
       {{- end }}
 
     exporters:
@@ -67,11 +48,9 @@ data:
         {{- if .Values.jaeger.enabled }}
         traces:
           receivers: [otlp]
-          processors: [filter, tail_sampling]
           exporters: [otlp/jaeger]
         {{- end }}
         metrics:
           receivers: [otlp]
-          processors: [filter]
           exporters: [prometheus]
       {{- end }}
